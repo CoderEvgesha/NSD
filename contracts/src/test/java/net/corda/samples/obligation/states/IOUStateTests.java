@@ -92,7 +92,7 @@ public class IOUStateTests {
      */
     @Test
     public void lenderIsParticipant() {
-        IOUState iouState = new IOUState(Currencies.POUNDS(0), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iouState = new IOUState(Currencies.POUNDS(0), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         assertNotEquals(iouState.getParticipants().indexOf(TestUtils.ALICE.getParty()), -1);
     }
 
@@ -102,7 +102,7 @@ public class IOUStateTests {
      */
     @Test
     public void borrowerIsParticipant() {
-        IOUState iouState = new IOUState(Currencies.POUNDS(0), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iouState = new IOUState(Currencies.POUNDS(0), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         assertNotEquals(iouState.getParticipants().indexOf(TestUtils.BOB.getParty()), -1);
     }
 
@@ -176,7 +176,7 @@ public class IOUStateTests {
      */
     @Test
     public void checkPayHelperMethod() {
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         assertEquals(Currencies.DOLLARS(5), iou.pay(Currencies.DOLLARS(5)).getPaid());
         assertEquals(Currencies.DOLLARS(3), iou.pay(Currencies.DOLLARS(1)).pay(Currencies.DOLLARS(2)).getPaid());
         assertEquals(Currencies.DOLLARS(10), iou.pay(Currencies.DOLLARS(5)).pay(Currencies.DOLLARS(3)).pay(Currencies.DOLLARS(2)).getPaid());
@@ -189,7 +189,7 @@ public class IOUStateTests {
      */
     @Test
     public void checkWithNewLenderHelperMethod() {
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         Assert.assertEquals(TestUtils.MINICORP.getParty(), iou.withNewLender(TestUtils.MINICORP.getParty()).getLender());
         Assert.assertEquals(TestUtils.MEGACORP.getParty(), iou.withNewLender(TestUtils.MEGACORP.getParty()).getLender());
     }

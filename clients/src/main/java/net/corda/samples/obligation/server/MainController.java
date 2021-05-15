@@ -1,5 +1,9 @@
 package net.corda.samples.obligation.server;
 
+import accountUtilities.AcceptIssuer;
+import accountUtilities.CreateNewAccount;
+import accountUtilities.ProposeIssuer;
+import accountUtilities.ViewMyAccounts;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.corda.client.jackson.JacksonSupport;
 import net.corda.core.contracts.*;
@@ -9,14 +13,16 @@ import net.corda.core.messaging.CordaRPCOps;
 import net.corda.core.node.NodeInfo;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.finance.contracts.asset.Cash;
-import net.corda.samples.obligation.flows.IOUIssueFlow;
-import net.corda.samples.obligation.flows.IOUSettleFlow;
-import net.corda.samples.obligation.flows.IOUTransferFlow;
-import net.corda.samples.obligation.flows.SelfIssueCashFlow;
+import net.corda.samples.obligation.flows.iou.IOUIssueFlow;
+import net.corda.samples.obligation.flows.iou.IOUSettleFlow;
+import net.corda.samples.obligation.flows.iou.IOUTransferFlow;
+import net.corda.samples.obligation.flows.iou.SelfIssueCashFlow;
 import net.corda.samples.obligation.states.IOUState;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+
 import org.bouncycastle.asn1.x500.X500Name;
 import org.bouncycastle.asn1.x500.style.BCStyle;
 import org.slf4j.Logger;
@@ -50,8 +56,10 @@ public class MainController {
 
     }
 
-    /** Helpers for filtering the network map cache. */
-    public String toDisplayString(X500Name name){
+    /**
+     * Helpers for filtering the network map cache.
+     */
+    public String toDisplayString(X500Name name) {
         return BCStyle.INSTANCE.toString(name);
     }
 
@@ -61,11 +69,11 @@ public class MainController {
                 .collect(Collectors.toList()).isEmpty();
     }
 
-    private boolean isMe(NodeInfo nodeInfo){
+    private boolean isMe(NodeInfo nodeInfo) {
         return nodeInfo.getLegalIdentities().get(0).getName().equals(me);
     }
 
-    private boolean isNetworkMap(NodeInfo nodeInfo){
+    private boolean isNetworkMap(NodeInfo nodeInfo) {
         return nodeInfo.getLegalIdentities().get(0).getName().getOrganisation().equals("Network Map Service");
     }
 
@@ -117,6 +125,20 @@ public class MainController {
         return myMap;
     }
 
+    @GetMapping(value = "/accounts", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<String>> getAccounts() {
+        try {
+
+            List<String> accounts = proxy.startTrackedFlowDynamic(ViewMyAccounts.class).getReturnValue().get();
+            return ResponseEntity.ok(accounts);
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(Collections.singletonList(e.getMessage()));
+        }
+    }
+
     @GetMapping(value = "/notaries", produces = TEXT_PLAIN_VALUE)
     private String notaries() {
         return proxy.notaryIdentities().toString();
@@ -132,38 +154,83 @@ public class MainController {
         return proxy.vaultQuery(ContractState.class).getStates().toString();
     }
 
-    @GetMapping(value = "/me",produces = APPLICATION_JSON_VALUE)
-    private HashMap<String, String> whoami(){
+    @GetMapping(value = "/me", produces = APPLICATION_JSON_VALUE)
+    private HashMap<String, String> whoami() {
         HashMap<String, String> myMap = new HashMap<>();
         myMap.put("me", me.toString());
         return myMap;
     }
-    @GetMapping(value = "/ious",produces = APPLICATION_JSON_VALUE)
+
+    @PostMapping(value = "/create-account/{account}", produces = TEXT_PLAIN_VALUE)
+    private ResponseEntity<String> createAccount(@PathVariable String account) {
+        try {
+
+            String result = proxy.startTrackedFlowDynamic(CreateNewAccount.class, account).getReturnValue().get();
+            return ResponseEntity.status(HttpStatus.CREATED).body("Account " + account + " Created");
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/propose-issuer/{account}", produces = TEXT_PLAIN_VALUE)
+    private ResponseEntity<String> proposeIssuer(@PathVariable String account) {
+        try {
+
+            String result = proxy.startTrackedFlowDynamic(ProposeIssuer.class, account, me).getReturnValue().get();
+            return ResponseEntity.status(HttpStatus.CREATED).body("IOU issuance by " + account + " requested!");
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @PostMapping(value = "/accept-issuer/{account}", produces = TEXT_PLAIN_VALUE)
+    private ResponseEntity<String> acceptIssuer(@PathVariable String account) {
+        try {
+
+            String result = proxy.startTrackedFlowDynamic(AcceptIssuer.class, account, me).getReturnValue().get();
+            return ResponseEntity.status(HttpStatus.CREATED).body("IOU issuance by " + account + " accepted by " + me.getOrganisation());
+
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(e.getMessage());
+        }
+    }
+
+    @GetMapping(value = "/ious", produces = APPLICATION_JSON_VALUE)
     public List<StateAndRef<IOUState>> getIOUs() {
         // Filter by states type: IOU.
         return proxy.vaultQuery(IOUState.class).getStates();
     }
-    @GetMapping(value = "/cash",produces = APPLICATION_JSON_VALUE)
+
+    @GetMapping(value = "/cash", produces = APPLICATION_JSON_VALUE)
     public List<StateAndRef<Cash.State>> getCash() {
         // Filter by states type: Cash.
         return proxy.vaultQuery(Cash.State.class).getStates();
     }
 
-    @GetMapping(value = "/cash-balances",produces = APPLICATION_JSON_VALUE)
-    public Map<Currency,Amount<Currency>> cashBalances(){
+    @GetMapping(value = "/cash-balances", produces = APPLICATION_JSON_VALUE)
+    public Map<Currency, Amount<Currency>> cashBalances() {
         return getCashBalances(proxy);
     }
 
-    @PutMapping(value =  "/issue-iou" , produces = TEXT_PLAIN_VALUE )
+    final Currency defaultCurrency = Currency.getInstance("RUR");
+
+    @PutMapping(value = "/issue-iou", produces = TEXT_PLAIN_VALUE)
     public ResponseEntity<String> issueIOU(@RequestParam(value = "amount") int amount,
-                                           @RequestParam(value = "currency") String currency,
                                            @RequestParam(value = "party") String party) throws IllegalArgumentException {
         // Get party objects for myself and the counterparty.
         Party me = proxy.nodeInfo().getLegalIdentities().get(0);
         Party lender = Optional.ofNullable(proxy.wellKnownPartyFromX500Name(CordaX500Name.parse(party))).orElseThrow(() -> new IllegalArgumentException("Unknown party name."));
         // Create a new IOU states using the parameters given.
         try {
-            IOUState state = new IOUState(new Amount<>((long) amount * 100, Currency.getInstance(currency)), lender, me);
+            IOUState state = new IOUState(new Amount<>((long) amount * 100, defaultCurrency), lender, me);
             // Start the IOUIssueFlow. We block and waits for the flows to return.
             SignedTransaction result = proxy.startTrackedFlowDynamic(IOUIssueFlow.InitiatorFlow.class, state).getReturnValue().get();
             // Return the response.
@@ -177,7 +244,8 @@ public class MainController {
                     .body(e.getMessage());
         }
     }
-    @GetMapping(value =  "transfer-iou" , produces =  TEXT_PLAIN_VALUE )
+
+    @GetMapping(value = "/transfer-iou", produces = TEXT_PLAIN_VALUE)
     public ResponseEntity<String> transferIOU(@RequestParam(value = "id") String id,
                                               @RequestParam(value = "party") String party) {
         UniqueIdentifier linearId = new UniqueIdentifier(null,UUID.fromString(id));
@@ -190,39 +258,27 @@ public class MainController {
         }
     }
 
-    /**
-     * Settles an IOU. Requires cash in the right currency to be able to settle.
-     * Example request:
-     * curl -X GET 'http://localhost:10007/api/iou/settle-iou?id=705dc5c5-44da-4006-a55b-e29f78955089&amount=98&currency=USD'
-     */
-    @GetMapping(value =  "settle-iou" , produces = TEXT_PLAIN_VALUE )
-    public  ResponseEntity<String> settleIOU(@RequestParam(value = "id") String id,
-                                             @RequestParam(value = "amount") int amount,
-                                             @RequestParam(value = "currency") String currency) {
+    @GetMapping(value = "/settle-iou", produces = TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> settleIOU(@RequestParam(value = "id") String id,
+                                            @RequestParam(value = "amount") int amount) {
 
         UniqueIdentifier linearId = new UniqueIdentifier(null, UUID.fromString(id));
         try {
             proxy.startTrackedFlowDynamic(IOUSettleFlow.InitiatorFlow.class, linearId,
-                    new Amount<>((long) amount * 100, Currency.getInstance(currency))).getReturnValue().get();
-            return ResponseEntity.status(HttpStatus.CREATED).body(""+ amount+ currency +" paid off on IOU id "+linearId.toString()+".");
+                    new Amount<>((long) amount * 100, defaultCurrency)).getReturnValue().get();
+            return ResponseEntity.status(HttpStatus.CREATED).body("" + amount + defaultCurrency.getCurrencyCode() + " paid off on IOU id " + linearId.toString() + ".");
 
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    /**
-     * Helper end-point to issue some cash to ourselves.
-     * Example request:
-     * curl -X GET 'http://localhost:10009/api/iou/self-issue-cash?amount=100&currency=USD'
-     */
-    @GetMapping(value =  "self-issue-cash" , produces =  TEXT_PLAIN_VALUE )
-    public ResponseEntity<String> selfIssueCash(@RequestParam(value = "amount") int amount,
-                      @RequestParam(value = "currency") String currency) {
+    @GetMapping(value = "/issue-cash", produces = TEXT_PLAIN_VALUE)
+    public ResponseEntity<String> issueCash(@RequestParam(value = "amount") int amount) {
 
         try {
             Cash.State cashState = proxy.startTrackedFlowDynamic(SelfIssueCashFlow.class,
-                    new Amount<>((long) amount * 100, Currency.getInstance(currency))).getReturnValue().get();
+                    new Amount<>((long) amount * 100, defaultCurrency)).getReturnValue().get();
             return ResponseEntity.status(HttpStatus.CREATED).body(cashState.toString());
 
         } catch (Exception e) {

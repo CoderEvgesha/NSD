@@ -1,9 +1,9 @@
 "use strict";
 
-angular.module('demoAppModule').controller('CreateIOUModalCtrl', function($http, $uibModalInstance, $uibModal, apiBaseURL, peers) {
+angular.module('demoAppModule').controller('CreateIOUModalCtrl', function($http, $uibModalInstance, $uibModal, apiBaseURL, accounts) {
     const createIOUModal = this;
 
-    createIOUModal.peers = peers;
+    createIOUModal.accounts = accounts;
     createIOUModal.form = {};
     createIOUModal.formError = false;
 
@@ -15,7 +15,6 @@ angular.module('demoAppModule').controller('CreateIOUModalCtrl', function($http,
             createIOUModal.formError = false;
 
             const amount = createIOUModal.form.amount;
-            const currency = createIOUModal.form.currency;
             const party = createIOUModal.form.counterparty;
 
             $uibModalInstance.close();
@@ -23,7 +22,7 @@ angular.module('demoAppModule').controller('CreateIOUModalCtrl', function($http,
             // We define the IOU creation endpoint.
             const issueIOUEndpoint =
                 apiBaseURL +
-                `issue-iou?amount=${amount}&currency=${currency}&party=${party}`;
+                `issue-iou?amount=${amount}&party=${party}`;
 
             // We hit the endpoint to create the IOU and handle success/failure responses.
             $http.put(issueIOUEndpoint).then(

@@ -82,7 +82,7 @@ public class IOUIssueFlowTests {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 
-        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
+        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower, lenderNode, borrowerNode);
         IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(iou);
 
         Future<SignedTransaction> future = a.startFlow(flow);
@@ -123,7 +123,7 @@ public class IOUIssueFlowTests {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
 
-        IOUState zeroIou = new IOUState(Currencies.POUNDS(0), lender, borrower);
+        IOUState zeroIou = new IOUState(Currencies.POUNDS(0), lender, borrower, lenderNode, borrowerNode);
         Future<SignedTransaction> futureOne = a.startFlow(new IOUIssueFlow.InitiatorFlow(zeroIou));
         mockNetwork.runNetwork();
 
@@ -132,14 +132,14 @@ public class IOUIssueFlowTests {
         futureOne.get();
 
         // Check that an IOU with the same participants fails.
-        IOUState borrowerIsLenderIou = new IOUState(Currencies.POUNDS(10), lender, lender);
+        IOUState borrowerIsLenderIou = new IOUState(Currencies.POUNDS(10), lender, lender, lenderNode, borrowerNode);
         Future<SignedTransaction> futureTwo = a.startFlow(new IOUIssueFlow.InitiatorFlow(borrowerIsLenderIou));
         mockNetwork.runNetwork();
         exception.expectCause(instanceOf(TransactionVerificationException.class));
         futureTwo.get();
 
         // Check a good IOU passes.
-        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
+        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower, lenderNode, borrowerNode);
         Future<SignedTransaction> futureThree = a.startFlow(new IOUIssueFlow.InitiatorFlow(iou));
         mockNetwork.runNetwork();
         futureThree.get();
@@ -173,7 +173,7 @@ public class IOUIssueFlowTests {
     public void flowReturnsTransactionSignedByBothParties() throws Exception {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
+        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower, lenderNode, borrowerNode);
         IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(iou);
 
         Future<SignedTransaction> future = a.startFlow(flow);
@@ -199,7 +199,7 @@ public class IOUIssueFlowTests {
     public void flowRecordsTheSameTransactionInBothPartyVaults() throws Exception {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower);
+        IOUState iou = new IOUState(Currencies.POUNDS(10), lender, borrower, lenderNode, borrowerNode);
         IOUIssueFlow.InitiatorFlow flow = new IOUIssueFlow.InitiatorFlow(iou);
 
         Future<SignedTransaction> future = a.startFlow(flow);

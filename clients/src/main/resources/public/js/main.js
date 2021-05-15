@@ -7,10 +7,25 @@ angular.module('demoAppModule', ['ui.bootstrap']).controller('DemoAppCtrl', func
     const apiBaseURL = "/api/iou/";
 
     // Retrieves the identity of this and other nodes.
-    let peers = [];
-    $http.get(apiBaseURL + "me").then((response) => demoApp.thisNode = response.data.me);
-    $http.get(apiBaseURL + "peers").then((response) => peers = response.data.peers);
+    let accounts = [];
+    $http.get(apiBaseURL + "me").then((response) => demoApp.thisNode = response.data.me.match(/O=([^,]+)/)[1]);
+    $http.get(apiBaseURL + "accounts").then((response) => accounts = response.data);
 
+    /** Displays the Account creation modal. */
+    demoApp.openCreateAccountModal = () => {
+        const createAccountModal = $uibModal.open({
+            templateUrl: 'createAccountModal.html',
+            controller: 'CreateAccountModalCtrl',
+            controllerAs: 'createAccountModal',
+            resolve: {
+                apiBaseURL: () => apiBaseURL
+            }
+        });
+
+        // Ignores the modal result events.
+        createAccountModal.result.then(() => {}, () => {});
+    };
+    
     /** Displays the IOU creation modal. */
     demoApp.openCreateIOUModal = () => {
         const createIOUModal = $uibModal.open({
@@ -19,7 +34,7 @@ angular.module('demoAppModule', ['ui.bootstrap']).controller('DemoAppCtrl', func
             controllerAs: 'createIOUModal',
             resolve: {
                 apiBaseURL: () => apiBaseURL,
-                peers: () => peers
+                accounts: () => accounts
             }
         });
 
@@ -49,7 +64,7 @@ angular.module('demoAppModule', ['ui.bootstrap']).controller('DemoAppCtrl', func
             controllerAs: 'transferModal',
             resolve: {
                 apiBaseURL: () => apiBaseURL,
-                peers: () => peers,
+                accounts: () => accounts,
                 id: () => id
             }
         });

@@ -55,7 +55,7 @@ public class IOUSettleFlow {
 
             // 1. Retrieve the IOU State from the vault using LinearStateQueryCriteria
             List<UUID> listOfLinearIds = Arrays.asList(stateLinearId.getId());
-            QueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria(null, listOfLinearIds);
+            QueryCriteria queryCriteria = (QueryCriteria)(new QueryCriteria.LinearStateQueryCriteria(null, listOfLinearIds));
             Vault.Page results = getServiceHub().getVaultService().queryBy(IOUState.class, queryCriteria);
             StateAndRef inputStateAndRefToSettle = (StateAndRef) results.getStates().get(0);
             IOUState inputStateToSettle = (IOUState) ((StateAndRef) results.getStates().get(0)).getState().getData();

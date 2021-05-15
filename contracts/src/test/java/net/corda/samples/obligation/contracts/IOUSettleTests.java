@@ -52,7 +52,7 @@ public class IOUSettleTests {
      */
     @Test
     public void mustIncludeSettleCommand() {
-        IOUState iou = new IOUState(Currencies.POUNDS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.POUNDS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         Cash.State inputCash = createCashState(TestUtils.BOB.getParty(), Currencies.POUNDS(5));
         OwnableState outputCash = inputCash.withNewOwner(TestUtils.ALICE.getParty()).getOwnableState();
 
@@ -101,8 +101,8 @@ public class IOUSettleTests {
      */
     @Test
     public void mustBeOneGroupOfIOUs() {
-        IOUState iouONE = new IOUState(Currencies.POUNDS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
-        IOUState iouTWO = new IOUState(Currencies.POUNDS(5), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iouONE = new IOUState(Currencies.POUNDS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
+        IOUState iouTWO = new IOUState(Currencies.POUNDS(5), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         Cash.State inputCash = createCashState(TestUtils.BOB.getParty(), Currencies.POUNDS(5));
         CommandAndState outputCash = inputCash.withNewOwner(TestUtils.ALICE.getParty());
 
@@ -141,8 +141,8 @@ public class IOUSettleTests {
     @Test
     public void mustHaveOneInputIOU() {
 
-        IOUState iou = new IOUState(Currencies.POUNDS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
-        IOUState iouOne = new IOUState(Currencies.POUNDS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.POUNDS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
+        IOUState iouOne = new IOUState(Currencies.POUNDS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         Cash.State tenPounds = createCashState( TestUtils.BOB.getParty(), Currencies.POUNDS(10));
         Cash.State fivePounds = createCashState( TestUtils.BOB.getParty(), Currencies.POUNDS(5));
 
@@ -189,7 +189,7 @@ public class IOUSettleTests {
     @Test
     public void mustBeCashOutputStatesPresent() {
 
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         Cash.State cash = createCashState(TestUtils.BOB.getParty(), Currencies.DOLLARS(5));
         CommandAndState cashPayment = cash.withNewOwner(TestUtils.ALICE.getParty());
 
@@ -229,7 +229,7 @@ public class IOUSettleTests {
      */
     @Test
     public void mustBeCashOutputStatesWithRecipientAsOwner() {
-        IOUState iou = new IOUState(Currencies.POUNDS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.POUNDS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         Cash.State cash = createCashState(TestUtils.BOB.getParty(), Currencies.POUNDS(5));
         CommandAndState invalidCashPayment = cash.withNewOwner(TestUtils.CHARLIE.getParty());
         CommandAndState validCashPayment = cash.withNewOwner(TestUtils.ALICE.getParty());
@@ -273,7 +273,7 @@ public class IOUSettleTests {
      */
     @Test
     public void cashSettlementAmountMustBeLessThanRemainingIOUAmount() {
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         Cash.State elevenDollars = createCashState( TestUtils.BOB.getParty(), Currencies.DOLLARS(11));
         Cash.State tenDollars = createCashState( TestUtils.BOB.getParty(), Currencies.DOLLARS(10));
         Cash.State fiveDollars = createCashState( TestUtils.BOB.getParty(), Currencies.DOLLARS(5));
@@ -320,7 +320,7 @@ public class IOUSettleTests {
      */
     @Test
     public void cashSettlementMustBeInTheCorrectCurrency() {
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         Cash.State tenDollars = createCashState( TestUtils.BOB.getParty(), Currencies.DOLLARS(10));
         Cash.State tenPounds = createCashState( TestUtils.BOB.getParty(), Currencies.POUNDS(10));
 
@@ -356,7 +356,7 @@ public class IOUSettleTests {
      */
     @Test
     public void mustOnlyHaveOutputIOUIfNotFullySettling() {
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         Cash.State tenDollars = createCashState( TestUtils.BOB.getParty(), Currencies.DOLLARS(10));
         Cash.State fiveDollars = createCashState( TestUtils.BOB.getParty(), Currencies.DOLLARS(5));
         ledger(ledgerServices, l -> {
@@ -409,7 +409,7 @@ public class IOUSettleTests {
      */
     @Test
     public void onlyPaidPropertyMayChange() {
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         Cash.State fiveDollars = createCashState( TestUtils.BOB.getParty(), Currencies.DOLLARS(5));
 
         ledger(ledgerServices, l -> {
@@ -472,7 +472,7 @@ public class IOUSettleTests {
      * TODO: Add a constraint to the contracts code that ensures this is the case.
      */
     public void mustBeSignedByAllParticipants() {
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         Cash.State cash = createCashState(TestUtils.BOB.getParty(), Currencies.DOLLARS(5));
         CommandAndState cashPayment = cash.withNewOwner(TestUtils.ALICE.getParty());
 

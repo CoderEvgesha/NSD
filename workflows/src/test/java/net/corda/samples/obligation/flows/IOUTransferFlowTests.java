@@ -86,7 +86,7 @@ public class IOUTransferFlowTests {
     public void flowReturnsCorrectlyFormedPartiallySignedTransaction() throws Exception {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower));
+        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower, lenderNode, borrowerNode));
         IOUState inputIou = (IOUState) stx.getTx().getOutputs().get(0).getData();
         IOUTransferFlow.InitiatorFlow flow = new IOUTransferFlow.InitiatorFlow(inputIou.getLinearId(), c.getInfo().getLegalIdentities().get(0));
         Future<SignedTransaction> future = a.startFlow(flow);
@@ -122,7 +122,7 @@ public class IOUTransferFlowTests {
     public void flowCanOnlyBeRunByCurrentLender() throws Exception {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower));
+        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower, lenderNode, borrowerNode));
         IOUState inputIou = (IOUState) stx.getTx().getOutputs().get(0).getData();
         IOUTransferFlow.InitiatorFlow flow = new IOUTransferFlow.InitiatorFlow(inputIou.getLinearId(), c.getInfo().component2().get(0).getParty());
         Future<SignedTransaction> future = b.startFlow(flow);
@@ -143,7 +143,7 @@ public class IOUTransferFlowTests {
     public void iouCannotBeTransferredToSameParty() throws Exception {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower));
+        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower, lenderNode, borrowerNode));
         IOUState inputIou = (IOUState) stx.getTx().getOutputs().get(0).getData();
         IOUTransferFlow.InitiatorFlow flow = new IOUTransferFlow.InitiatorFlow(inputIou.getLinearId(), c.getInfo().component2().get(0).getParty());
         Future<SignedTransaction> future = a.startFlow(flow);
@@ -166,7 +166,7 @@ public class IOUTransferFlowTests {
     public void flowReturnsTransactionSignedBtAllParties() throws Exception {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower));
+        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower, lenderNode, borrowerNode));
         IOUState inputIou = (IOUState) stx.getTx().getOutputs().get(0).getData();
         IOUTransferFlow.InitiatorFlow flow = new IOUTransferFlow.InitiatorFlow(inputIou.getLinearId(), lender);
         Future<SignedTransaction> future = a.startFlow(flow);
@@ -188,7 +188,7 @@ public class IOUTransferFlowTests {
     public void flowReturnsTransactionSignedByAllPartiesAndNotary() throws Exception {
         Party lender = a.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
         Party borrower = b.getInfo().getLegalIdentitiesAndCerts().get(0).getParty();
-        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower));
+        SignedTransaction stx = issueIOU(new IOUState(Currencies.DOLLARS(10), lender, borrower, lenderNode, borrowerNode));
         IOUState inputIou = (IOUState) stx.getTx().getOutputs().get(0).getData();
         IOUTransferFlow.InitiatorFlow flow = new IOUTransferFlow.InitiatorFlow(inputIou.getLinearId(), c.getInfo().component2().get(0).getParty());
         Future<SignedTransaction> future = a.startFlow(flow);

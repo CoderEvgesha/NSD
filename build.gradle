@@ -183,6 +183,7 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
             address "0.0.0.0:10017"
             adminAddress "0.0.0.0:10117"
         }
+        rpcUsers = [[ user: "user1", "password": "test", "permissions": ["ALL"]]]
     }
 }
 

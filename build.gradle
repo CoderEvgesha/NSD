@@ -20,7 +20,7 @@ buildscript {
 
         //account
         accounts_release_group = 'com.r3.corda.lib.accounts'
-        accounts_release_version = '1.0'
+        accounts_release_version = '1.0.2'
         //CI
         confidential_id_release_group = "com.r3.corda.lib.ci"
         confidential_id_release_version = "1.0"
@@ -31,6 +31,7 @@ buildscript {
         mavenCentral()
         jcenter()
         maven { url 'https://software.r3.com/artifactory/corda-releases' }
+        maven { url 'https://software.r3.com/artifactory/corda-lib' }
     }
 
     dependencies {
@@ -51,6 +52,7 @@ allprojects {
         jcenter()
         mavenCentral()
         maven { url 'https://software.r3.com/artifactory/corda' }
+        maven { url 'https://software.r3.com/artifactory/corda-lib' }
         maven { url 'https://jitpack.io' }
     }
 

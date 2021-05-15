@@ -1,5 +1,8 @@
 package net.corda.samples.obligation.flows;
 
+import net.corda.samples.obligation.flows.iou.IOUIssueFlow;
+import net.corda.samples.obligation.flows.iou.IOUSettleFlow;
+import net.corda.samples.obligation.flows.iou.SelfIssueCashFlow;
 import net.corda.testing.node.*;
 import net.corda.core.contracts.Amount;
 import net.corda.core.contracts.CommandWithParties;

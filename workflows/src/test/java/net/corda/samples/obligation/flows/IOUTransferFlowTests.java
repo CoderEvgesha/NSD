@@ -7,6 +7,8 @@ import net.corda.core.identity.CordaX500Name;
 import net.corda.core.identity.Party;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.finance.Currencies;
+import net.corda.samples.obligation.flows.iou.IOUIssueFlow;
+import net.corda.samples.obligation.flows.iou.IOUTransferFlow;
 import net.corda.testing.node.*;
 import net.corda.samples.obligation.states.IOUState;
 import net.corda.samples.obligation.contracts.IOUContract;

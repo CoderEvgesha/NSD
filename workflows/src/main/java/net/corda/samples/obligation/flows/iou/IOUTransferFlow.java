@@ -1,4 +1,4 @@
-package net.corda.samples.obligation.flows;
+package net.corda.samples.obligation.flows.iou;
 
 import co.paralleluniverse.fibers.Suspendable;
 import net.corda.core.contracts.Command;

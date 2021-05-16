@@ -38,7 +38,7 @@ public class IOUTransferTests {
      * Uncomment the testing setup below.
      */
     // A dummy states
-    IOUState dummyState = new IOUState(Currencies.DOLLARS(0), TestUtils.CHARLIE.getParty(), TestUtils.CHARLIE.getParty());
+    IOUState dummyState = new IOUState(Currencies.DOLLARS(0), TestUtils.CHARLIE.getParty(), TestUtils.CHARLIE.getParty(), lenderNode, borrowerNode);
 
     // function to create new Cash states.
     private Cash.State createCashState(AbstractParty owner, Amount<Currency> amount) {
@@ -75,7 +75,7 @@ public class IOUTransferTests {
      */
     @Test
     public void mustHandleMultipleCommandValues() {
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         ledger(ledgerServices, l -> {
             l.transaction(tx -> {
                 tx.output(IOUContract.IOU_CONTRACT_ID, iou);
@@ -106,7 +106,7 @@ public class IOUTransferTests {
      */
     @Test
     public void mustHaveOneInputAndOneOutput() {
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         ledger(ledgerServices, l -> {
             l.transaction(tx -> {
                 tx.input(IOUContract.IOU_CONTRACT_ID, iou);
@@ -155,7 +155,7 @@ public class IOUTransferTests {
      */
     @Test
     public void onlyTheLenderMayChange() {
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         ledger(ledgerServices, l -> {
             l.transaction(tx -> {
                 tx.input(IOUContract.IOU_CONTRACT_ID, iou);
@@ -193,7 +193,7 @@ public class IOUTransferTests {
      */
     @Test
     public void theLenderMustChange() {
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         ledger(ledgerServices, l -> {
             l.transaction(tx -> {
                 tx.input(IOUContract.IOU_CONTRACT_ID, iou);
@@ -218,7 +218,7 @@ public class IOUTransferTests {
      */
     @Test
     public void allParticipantsMustSign() {
-        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty());
+        IOUState iou = new IOUState(Currencies.DOLLARS(10), TestUtils.ALICE.getParty(), TestUtils.BOB.getParty(), lenderNode, borrowerNode);
         ledger(ledgerServices, l -> {
             l.transaction(tx -> {
                 tx.input(IOUContract.IOU_CONTRACT_ID, iou);

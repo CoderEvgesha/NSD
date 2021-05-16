@@ -1,10 +1,10 @@
 "use strict";
 
 // Similar to the IOU creation modal - see createIOUModal.js for comments.
-angular.module('demoAppModule').controller('TransferModalCtrl', function ($http, $uibModalInstance, $uibModal, apiBaseURL, peers, id) {
+angular.module('demoAppModule').controller('TransferModalCtrl', function ($http, $uibModalInstance, $uibModal, apiBaseURL, accounts, id) {
     const transferModal = this;
 
-    transferModal.peers = peers;
+    transferModal.accounts = accounts;
     transferModal.id = id;
     transferModal.form = {};
     transferModal.formError = false;

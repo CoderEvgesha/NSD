@@ -101,7 +101,7 @@ public class IOUSettleFlowTests {
      */
     @Test
     public void flowReturnsCorrectlyFormedPartiallySignedTransaction() throws Exception {
-        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
+        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0), lenderNode, borrowerNode));
         issueCash(Currencies.POUNDS(5));
         IOUState inputIOU = stx.getTx().outputsOfType(IOUState.class).get(0);
         IOUSettleFlow.InitiatorFlow flow = new IOUSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
@@ -164,7 +164,7 @@ public class IOUSettleFlowTests {
      */
     @Test
     public void settleFlowCanOnlyBeRunByBorrower() throws Exception {
-        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
+        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0), lenderNode, borrowerNode));
         issueCash(Currencies.POUNDS(5));
         IOUState inputIOU = stx.getTx().outputsOfType(IOUState.class).get(0);
         IOUSettleFlow.InitiatorFlow flow = new IOUSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
@@ -188,7 +188,7 @@ public class IOUSettleFlowTests {
      */
     @Test
     public void borrowerMustHaveCashInRightCurrency() throws Exception {
-        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
+        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0), lenderNode, borrowerNode));
         issueCash(Currencies.POUNDS(5));
         IOUState inputIOU = stx.getTx().outputsOfType(IOUState.class).get(0);
         IOUSettleFlow.InitiatorFlow flow = new IOUSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
@@ -210,7 +210,7 @@ public class IOUSettleFlowTests {
      */
     @Test
     public void borrowerMustHaveEnoughCashInRightCurrency() throws Exception {
-        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
+        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0), lenderNode, borrowerNode));
         IOUState inputIOU = stx.getTx().outputsOfType(IOUState.class).get(0);
         IOUSettleFlow.InitiatorFlow flow = new IOUSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
         Future<SignedTransaction> futureSettleResult = a.startFlow(flow);
@@ -230,7 +230,7 @@ public class IOUSettleFlowTests {
      */
     @Test
     public void flowReturnsTransactionSignedByBothParties() throws Exception {
-        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
+        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0), lenderNode, borrowerNode));
         issueCash(Currencies.POUNDS(5));
         IOUState inputIOU = stx.getTx().outputsOfType(IOUState.class).get(0);
         IOUSettleFlow.InitiatorFlow flow = new IOUSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));
@@ -251,7 +251,7 @@ public class IOUSettleFlowTests {
      */
     @Test
     public void flowReturnsCommittedTransaction() throws Exception {
-        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0)));
+        SignedTransaction stx = issueIOU(new IOUState(Currencies.POUNDS(10), b.getInfo().getLegalIdentities().get(0), a.getInfo().getLegalIdentities().get(0), lenderNode, borrowerNode));
         issueCash(Currencies.POUNDS(5));
         IOUState inputIOU = stx.getTx().outputsOfType(IOUState.class).get(0);
         IOUSettleFlow.InitiatorFlow flow = new IOUSettleFlow.InitiatorFlow(inputIOU.getLinearId(), Currencies.POUNDS(5));

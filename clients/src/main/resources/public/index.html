@@ -16,7 +16,7 @@ COMING WEEKS, WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Example CorDapp</title>
+    <title>ЦиФрА - Платформа ЦФА для НРД</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
@@ -29,6 +29,7 @@ COMING WEEKS, WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.0-rc.1/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/2.2.0/ui-bootstrap-tpls.min.js"></script>
     <script src="js/main.js"></script>
+    <script src="js/createAccountModal.js"></script>
     <script src="js/createIOUModal.js"></script>
     <script src="js/issueCashModal.js"></script>
     <script src="js/transferModal.js"></script>
@@ -41,12 +42,36 @@ COMING WEEKS, WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
         <div class="navbar-header">
             <a class="navbar-brand" href="#">{{demoApp.thisNode}}</a>
         </div>
+        <button ng-click="demoApp.openCreateAccountModal()" type="button" class="btn btn-primary navbar-btn">Create account</button>
         <button ng-click="demoApp.openCreateIOUModal()" type="button" class="btn btn-primary navbar-btn">Create IOU</button>
         <button ng-click="demoApp.openIssueCashModal()" type="button" class="btn btn-primary navbar-btn">Issue cash</button>
-        <button ng-click="demoApp.refresh()" type="button" class="btn btn-default navbar-btn"><span
-                class="glyphicon glyphicon-refresh"></span></button>
+        <button ng-click="demoApp.refresh()" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-refresh"></span></button>
     </div>
 </nav>
+
+<script type="text/ng-template" id="createAccountModal.html">
+    <div class="modal-header">
+        <h4 class="modal-title">Add new account</h4>
+    </div>
+    <form>
+        <div class="modal-body">
+            <div class="form-group">
+                <label for="createAccountAccount" class="control-label">Account name:</label>
+                <input type="text" ng-model="createAccountModal.form.account" class="form-control" id="createAccountAccount">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button ng-click="createAccountModal.cancel()" type="button" class="btn btn-default">Close</button>
+            <button ng-click="createAccountModal.create()" type="button" class="btn btn-primary">Create account</button>
+        </div>
+    </form>
+</script>
+
+<script type="text/ng-template" id="createAccountMsgModal.html">
+    <div class="modal-body" id="create-account-modal-body">
+        {{ createAccountMsgModal.message }}
+    </div>
+</script>
 
 <script type="text/ng-template" id="createIOUModal.html">
     <div class="modal-header">
@@ -57,12 +82,8 @@ COMING WEEKS, WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
             <div class="form-group">
                 <label for="createIOUCounterparty" class="control-label">Counter-party:</label>
                 <select ng-model="createIOUModal.form.counterparty" class="form-control" id="createIOUCounterparty"
-                        ng-options="peer as peer for peer in createIOUModal.peers">
+                        ng-options="account as account for account in createIOUModal.accounts">
                 </select>
-            </div>
-            <div class="form-group">
-                <label for="createIOUCurrency" class="control-label">Currency (ISO code):</label>
-                <input type="text" ng-model="createIOUModal.form.currency" class="form-control" id="createIOUCurrency">
             </div>
             <div class="form-group">
                 <label for="createIOUAmount" class="control-label">Amount (Int):</label>
@@ -95,10 +116,6 @@ COMING WEEKS, WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
     </div>
     <form>
         <div class="modal-body">
-            <div class="form-group">
-                <label for="issueCashCurrency" class="control-label">Currency (ISO code):</label>
-                <input type="text" ng-model="issueCashModal.form.currency" class="form-control" id="issueCashCurrency">
-            </div>
             <div class="form-group">
                 <label for="issueCashAmount" class="control-label">Amount (Int):</label>
                 <input type="text" ng-model="issueCashModal.form.amount" class="form-control" id="issueCashAmount">
@@ -133,7 +150,7 @@ COMING WEEKS, WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
             <div class="form-group">
                 <label for="transferCounterparty" class="control-label">Counter-party:</label>
                 <select ng-model="transferModal.form.counterparty" class="form-control" id="transferCounterparty"
-                        ng-options="peer as peer for peer in transferModal.peers">
+                        ng-options="account as account for account in transferModal.accounts">
                 </select>
             </div>
             <div ng-show="transferModal.formError" class="form-group">
@@ -163,10 +180,6 @@ COMING WEEKS, WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
     </div>
     <form>
         <div class="modal-body">
-            <div class="form-group">
-                <label for="settleCurrency" class="control-label">Currency (ISO code):</label>
-                <input type="text" ng-model="settleModal.form.currency" class="form-control" id="settleCurrency">
-            </div>
             <div class="form-group">
                 <label for="settleAmount" class="control-label">Amount (Int):</label>
                 <input type="text" ng-model="settleModal.form.amount" class="form-control" id="settleAmount">

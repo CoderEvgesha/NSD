@@ -1,0 +1,29 @@
+.header {
+    background-color: #e53b27;
+    box-sizing: border-box;
+    height: 80px;
+    /*max-width: 1366px;*/
+    user-select: none;
+    box-shadow: 0 2px 6px -6px #222;
+    margin-bottom: 2%;
+}
+
+.header_container {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 5%;
+    margin-right: 5%;
+}
+
+.header_logo_container {
+    align-items: center;
+    display: flex;
+}
+
+.header_logo_container img {
+    max-width: 60px;
+    background: #dc3a26;
+    box-shadow:  5px 5px 10px #cd3623,
+    -5px -5px 10px #eb3e29;
+}

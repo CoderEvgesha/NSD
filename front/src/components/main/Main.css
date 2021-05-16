@@ -1,0 +1,36 @@
+.main_container {
+    display: flex;
+    flex-direction: column;
+    font-family: 'Open Sans', sans-serif;
+    margin-left: 15%;
+    margin-right: 15%;
+}
+
+.actor {
+    font-family: 'Open Sans', sans-serif;
+    margin-right: 10px;
+    font-size: 18px;
+    font-weight: 400;
+}
+
+.account_actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.actions_btn {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #E53D27;
+    color: #FFFFFF;
+    display: inline-block;
+    text-align: center;
+    padding: 6px 10px;
+    border-radius: 5px;
+    letter-spacing: 1px;
+    margin-right: 10px;
+}
+
+.actions_btn {
+    cursor: pointer;
+}

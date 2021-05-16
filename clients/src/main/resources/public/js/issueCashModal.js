@@ -1,9 +1,10 @@
 "use strict";
 
 // Similar to the IOU creation modal - see createIOUModal.js for comments.
-angular.module('demoAppModule').controller('IssueCashModalCtrl', function($http, $uibModalInstance, $uibModal, apiBaseURL) {
+angular.module('demoAppModule').controller('IssueCashModalCtrl', function($http, $uibModalInstance, $uibModal, apiBaseURL, accounts) {
     const issueCashModal = this;
 
+    issueCashModal.accounts = accounts;
     issueCashModal.form = {};
     issueCashModal.formError = false;
 
@@ -13,13 +14,14 @@ angular.module('demoAppModule').controller('IssueCashModalCtrl', function($http,
         } else {
             issueCashModal.formError = false;
 
+            const account = issueCashModal.form.account;
             const amount = issueCashModal.form.amount;
 
             $uibModalInstance.close();
 
             const issueCashEndpoint =
                 apiBaseURL +
-                `issue-cash?amount=${amount}`;
+                `issue-cash?account=${account}&amount=${amount}`;
 
             $http.get(issueCashEndpoint).then(
                 (result) => {console.log(result.toString()); issueCashModal.displayMessage(result); },

@@ -42,8 +42,8 @@ COMING WEEKS, WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
         <div class="navbar-header">
             <a class="navbar-brand" href="#">{{demoApp.thisNode}}</a>
         </div>
-        <button ng-click="demoApp.openCreateAccountModal()" type="button" class="btn btn-primary navbar-btn">Create account</button>
-        <button ng-click="demoApp.openCreateIOUModal()" type="button" class="btn btn-primary navbar-btn">Create IOU</button>
+        <button ng-show="demoApp.thisNode == 'Operator'" ng-click="demoApp.openCreateAccountModal()" type="button" class="btn btn-primary navbar-btn">Create account</button>
+        <button ng-show="demoApp.thisNode == 'Issuer'" ng-click="demoApp.openCreateIOUModal()" type="button" class="btn btn-primary navbar-btn">Create IOU</button>
         <button ng-click="demoApp.openIssueCashModal()" type="button" class="btn btn-primary navbar-btn">Issue cash</button>
         <button ng-click="demoApp.refresh()" type="button" class="btn btn-default navbar-btn"><span class="glyphicon glyphicon-refresh"></span></button>
     </div>
@@ -112,10 +112,16 @@ COMING WEEKS, WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
 
 <script type="text/ng-template" id="issueCashModal.html">
     <div class="modal-header">
-        <h4 class="modal-title">Self-issue cash</h4>
+        <h4 class="modal-title">Issue cash</h4>
     </div>
     <form>
         <div class="modal-body">
+            <div class="form-group">
+                <label for="issueCashAccount" class="control-label">Account:</label>
+                <select ng-model="issueCashModal.form.account" class="form-control" id="issueCashAccount"
+                        ng-options="account as account for account in issueCashModal.accounts">
+                </select>
+            </div>
             <div class="form-group">
                 <label for="issueCashAmount" class="control-label">Amount (Int):</label>
                 <input type="text" ng-model="issueCashModal.form.amount" class="form-control" id="issueCashAmount">
@@ -257,8 +263,8 @@ COMING WEEKS, WE'LL WRITE A TUTORIAL ON HOW BEST TO DO THIS.
                     </thead>
                     <tbody>
                     <tr ng-repeat="iou in demoApp.ious">
-                        <td class="vert-align">{{iou.lender}}</td>
-                        <td class="vert-align">{{iou.borrower}}</td>
+                        <td class="vert-align">Issuer</td>
+                        <td class="vert-align">Alice</td>
                         <td class="vert-align">{{iou.amount}}</td>
                         <td class="vert-align">{{iou.paid}}</td>
                         <td>

@@ -49,7 +49,8 @@ angular.module('demoAppModule', ['ui.bootstrap']).controller('DemoAppCtrl', func
             controller: 'IssueCashModalCtrl',
             controllerAs: 'issueCashModal',
             resolve: {
-                apiBaseURL: () => apiBaseURL
+                apiBaseURL: () => apiBaseURL,
+                accounts: () => accounts
             }
         });
 
@@ -96,6 +97,9 @@ angular.module('demoAppModule', ['ui.bootstrap']).controller('DemoAppCtrl', func
         // Update the cash balances.
         $http.get(apiBaseURL + "cash-balances").then((response) => demoApp.cashBalances =
             response.data);
+
+        // Update the cash.
+        $http.get(apiBaseURL + "cash").then(console.log);
     }
 
     demoApp.refresh();

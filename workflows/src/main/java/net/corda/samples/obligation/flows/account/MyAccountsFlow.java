@@ -23,7 +23,7 @@ public class MyAccountsFlow extends FlowLogic<List<String>> {
     @Suspendable
     public List<String> call() throws FlowException {
         AccountService accountService = getServiceHub().cordaService(KeyManagementBackedAccountService.class);
-        List<String> aAccountsQuery = accountService.ourAccounts().stream().map(it -> it.getState().getData().getName()).collect(Collectors.toList());
+        List<String> aAccountsQuery = accountService.allAccounts().stream().map(it -> it.getState().getData().getName()).collect(Collectors.toList());
         return aAccountsQuery;
     }
 }

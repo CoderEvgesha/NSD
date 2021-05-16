@@ -78,7 +78,7 @@ public class IOUSettleFlowTests {
     }
 
     private Cash.State issueCash(Amount<Currency> amount) throws InterruptedException, ExecutionException {
-        SelfIssueCashFlow flow = new SelfIssueCashFlow(amount);
+        SelfIssueCashFlow flow = new SelfIssueCashFlow("", amount);
         CordaFuture future = a.startFlow(flow);
         mockNetwork.runNetwork();
         return (Cash.State) future.get();

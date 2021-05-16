@@ -1,9 +1,5 @@
 package net.corda.samples.obligation.server;
 
-import accountUtilities.AcceptIssuer;
-import accountUtilities.CreateNewAccount;
-import accountUtilities.ProposeIssuer;
-import accountUtilities.ViewMyAccounts;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.corda.client.jackson.JacksonSupport;
 import net.corda.core.contracts.*;
@@ -13,6 +9,9 @@ import net.corda.core.messaging.CordaRPCOps;
 import net.corda.core.node.NodeInfo;
 import net.corda.core.transactions.SignedTransaction;
 import net.corda.finance.contracts.asset.Cash;
+import net.corda.samples.obligation.flows.account.MyAccountsFlow;
+import net.corda.samples.obligation.flows.account.NewAccountFlow;
+import net.corda.samples.obligation.flows.account.ShareAccountFlow;
 import net.corda.samples.obligation.flows.iou.IOUIssueFlow;
 import net.corda.samples.obligation.flows.iou.IOUSettleFlow;
 import net.corda.samples.obligation.flows.iou.IOUTransferFlow;
@@ -129,7 +128,7 @@ public class MainController {
     public ResponseEntity<List<String>> getAccounts() {
         try {
 
-            List<String> accounts = proxy.startTrackedFlowDynamic(ViewMyAccounts.class).getReturnValue().get();
+            List<String> accounts = proxy.startTrackedFlowDynamic(MyAccountsFlow.class).getReturnValue().get();
             return ResponseEntity.ok(accounts);
 
         } catch (Exception e) {
@@ -165,36 +164,12 @@ public class MainController {
     private ResponseEntity<String> createAccount(@PathVariable String account) {
         try {
 
-            String result = proxy.startTrackedFlowDynamic(CreateNewAccount.class, account).getReturnValue().get();
+            String result = proxy.startTrackedFlowDynamic(NewAccountFlow.class, account).getReturnValue().get();
+
+            Party issuer = Optional.ofNullable(proxy.wellKnownPartyFromX500Name(CordaX500Name.parse("O=Issuer,L=Tver,C=RU"))).orElseThrow(() -> new IllegalArgumentException("Unknown party name."));
+            proxy.startTrackedFlowDynamic(ShareAccountFlow.class, account, issuer);
+
             return ResponseEntity.status(HttpStatus.CREATED).body("Account " + account + " Created");
-
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
-        }
-    }
-
-    @PostMapping(value = "/propose-issuer/{account}", produces = TEXT_PLAIN_VALUE)
-    private ResponseEntity<String> proposeIssuer(@PathVariable String account) {
-        try {
-
-            String result = proxy.startTrackedFlowDynamic(ProposeIssuer.class, account, me).getReturnValue().get();
-            return ResponseEntity.status(HttpStatus.CREATED).body("IOU issuance by " + account + " requested!");
-
-        } catch (Exception e) {
-            return ResponseEntity
-                    .status(HttpStatus.BAD_REQUEST)
-                    .body(e.getMessage());
-        }
-    }
-
-    @PostMapping(value = "/accept-issuer/{account}", produces = TEXT_PLAIN_VALUE)
-    private ResponseEntity<String> acceptIssuer(@PathVariable String account) {
-        try {
-
-            String result = proxy.startTrackedFlowDynamic(AcceptIssuer.class, account, me).getReturnValue().get();
-            return ResponseEntity.status(HttpStatus.CREATED).body("IOU issuance by " + account + " accepted by " + me.getOrganisation());
 
         } catch (Exception e) {
             return ResponseEntity
@@ -227,7 +202,7 @@ public class MainController {
                                            @RequestParam(value = "party") String party) throws IllegalArgumentException {
         // Get party objects for myself and the counterparty.
         Party me = proxy.nodeInfo().getLegalIdentities().get(0);
-        Party lender = Optional.ofNullable(proxy.wellKnownPartyFromX500Name(CordaX500Name.parse(party))).orElseThrow(() -> new IllegalArgumentException("Unknown party name."));
+        Party lender = Optional.ofNullable(proxy.wellKnownPartyFromX500Name(CordaX500Name.parse("O=Operator,L=Moscow,C=RU"))).orElseThrow(() -> new IllegalArgumentException("Unknown party name."));
         // Create a new IOU states using the parameters given.
         try {
             IOUState state = new IOUState(new Amount<>((long) amount * 100, defaultCurrency), lender, me);
@@ -274,10 +249,11 @@ public class MainController {
     }
 
     @GetMapping(value = "/issue-cash", produces = TEXT_PLAIN_VALUE)
-    public ResponseEntity<String> issueCash(@RequestParam(value = "amount") int amount) {
+    public ResponseEntity<String> issueCash(@RequestParam(value = "account") String account,
+                                            @RequestParam(value = "amount") int amount) {
 
         try {
-            Cash.State cashState = proxy.startTrackedFlowDynamic(SelfIssueCashFlow.class,
+            Cash.State cashState = proxy.startTrackedFlowDynamic(SelfIssueCashFlow.class, account,
                     new Amount<>((long) amount * 100, defaultCurrency)).getReturnValue().get();
             return ResponseEntity.status(HttpStatus.CREATED).body(cashState.toString());
 

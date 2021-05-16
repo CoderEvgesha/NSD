@@ -20,7 +20,7 @@ angular.module('demoAppModule').controller('CreateAccountModalCtrl', function($h
             // We define the account creation endpoint.
             const createAccountEndpoint =
                 apiBaseURL +
-                `createAccount/${account}`;
+                `create-account/${account}`;
 
             // We hit the endpoint to create the account and handle success/failure responses.
             $http.post(createAccountEndpoint).then(

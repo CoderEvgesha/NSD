@@ -14,16 +14,18 @@ import java.util.Currency;
 @StartableByRPC
 public class SelfIssueCashFlow extends FlowLogic<Cash.State> {
 
+    private String account;
     private Amount<Currency> amount;
 
-    public SelfIssueCashFlow(Amount<Currency> amount) {
+    public SelfIssueCashFlow(String account, Amount<Currency> amount) {
+        this.account = account;
         this.amount = amount;
     }
 
     @Suspendable
     public Cash.State call() throws FlowException {
         /** Create the cash issue command. */
-        OpaqueBytes issueRef = OpaqueBytes.of("1".getBytes());
+        OpaqueBytes issueRef = OpaqueBytes.of(account.getBytes());
 
         // Obtain a reference to a notary we wish to use.
         /** METHOD 1: Take first notary on network, WARNING: use for test, non-prod environments, and single-notary networks only!*
